@@ -3,6 +3,13 @@ package manager;
 import java.util.LinkedList;
 import java.util.List;
 
+/**
+ * @author Denis
+ * @version 1.0
+ * Class for the implementation of the pattern Producer-Consumer
+ * To exchange data between threads
+ */
+
 public class ProducerConsumer<T> {
     private static final int BUFFER_MAX_SIZE = 1;
     private final List<T> buffer = new LinkedList<>();

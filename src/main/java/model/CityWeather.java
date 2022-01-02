@@ -2,9 +2,8 @@ package model;
 
 /**
  * @author Denis
- * @version 0.3b
- * The model class used to change and display the city name and temperature
- * also for exchanging data between threads
+ * @version 1.0
+ * The model class used to store name and temperature
  */
 
 public class CityWeather {

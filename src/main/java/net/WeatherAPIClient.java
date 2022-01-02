@@ -9,20 +9,26 @@ import java.util.ArrayList;
 
 /**
  * @author Denis
- * @version 0.3b
+ * @version 1.0
  * The class returns the required data for the requested city from the server.
  */
 public class WeatherAPIClient implements Runnable {
     CityWeather cityWeather;
     ProducerConsumer<ArrayList<Object>> producerConsumer;
 
+    /**
+     * Constructor
+     *
+     * @param cityWeather      - class-model for data storage
+     * @param producerConsumer - class for the implementation of the pattern Producer-Consumer (to exchange data between threads)
+     */
     public WeatherAPIClient(final CityWeather cityWeather, final ProducerConsumer<ArrayList<Object>> producerConsumer) {
         this.cityWeather = cityWeather;
         this.producerConsumer = producerConsumer;
     }
 
     /**
-     * The method gives the temperature for the requested city.
+     * Runs a side thread to get the temperature for the requested city.
      */
     public void run() {
         String city;

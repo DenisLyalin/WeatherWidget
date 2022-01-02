@@ -9,8 +9,8 @@ import java.util.ArrayList;
 
 /**
  * @author Denis
- * @version 0.3b
- * Class for creating a graphical interface
+ * @version 1.0
+ * Class for managing the graphical interface
  */
 
 public class Presenter implements Runnable {
@@ -18,11 +18,20 @@ public class Presenter implements Runnable {
     CityWeather cityWeather;
     ProducerConsumer<ArrayList<Object>> producerConsumer;
 
+    /**
+     * Constructor
+     *
+     * @param cityWeather      - class-model for data storage
+     * @param producerConsumer - class for the implementation of the pattern Producer-Consumer (to exchange data between threads)
+     */
     public Presenter(final CityWeather cityWeather, final ProducerConsumer<ArrayList<Object>> producerConsumer) {
         this.cityWeather = cityWeather;
         this.producerConsumer = producerConsumer;
     }
 
+    /**
+     * Running a side thread to wait and update data in the GUI
+     */
     public void run() {
         try {
             ArrayList<Object> buffer = producerConsumer.consume();
@@ -44,7 +53,7 @@ public class Presenter implements Runnable {
                     this.showTemp("--");
                 }
                 if (cityWeather.isFilePreferencesEmpty()) {
-                    cityWeather.setNeedUpdate(true); //если файл пуст и введен не корректный город - перезапускаем обновление
+                    cityWeather.setNeedUpdate(true);
                     this.showCity(cityWeather.getCity());
                     cityWeather.setFilePreferencesEmpty(false);
                 }
@@ -58,13 +67,17 @@ public class Presenter implements Runnable {
     }
 
     /**
-     * Method for help window
-     * Creating the dialog window
+     * Method of providing a window for control
+     *
+     * @param window - a window for control
      */
     public void injectionWindow(final MainWindow window) {
         this.window = window;
     }
 
+    /**
+     * Method for launching the city input dialog window when the program is first started
+     */
     public void enterCity() {
         JFrame f = new JFrame();
         String city;
@@ -79,10 +92,20 @@ public class Presenter implements Runnable {
         }
     }
 
+    /**
+     * Method for displaying a time stamp in the main window
+     *
+     * @param lastTimeUpdate - a time stamp
+     */
     public void setLastTimeUpdate(Long lastTimeUpdate) {
         window.setTimeStamp("Update " + lastTimeUpdate + " sec ago");
     }
 
+    /**
+     * The method for displaying a time stamp in the main window
+     *
+     * @param city - a city
+     */
     public void setCityFromMainWindow(String city) {
         if (!city.isEmpty()) {
             cityWeather.setNewCity(city);
@@ -90,10 +113,20 @@ public class Presenter implements Runnable {
         }
     }
 
+    /**
+     * The method for displaying a temperature in the main window
+     *
+     * @param temp - a temperature to display
+     */
     public void showTemp(String temp) {
         window.showTemp(temp);
     }
 
+    /**
+     * The method for displaying a city in the main window
+     *
+     * @param city - a city to display
+     */
     public void showCity(String city) {
         window.showCity(city);
     }

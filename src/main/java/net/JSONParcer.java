@@ -9,16 +9,18 @@ import java.util.ArrayList;
 
 /**
  * @author Denis
- * @version 0.1b
- * Class to conversion JSON in data for JAVA
+ * @version 1.0
+ * Class to convert JSON in data for JAVA
  */
 
 public class JSONParcer {
 
     /**
-     * Method to conversion JSON to data for JAVA and retrieve temperature value
+     * Method to convert JSON to data for JAVA and retrieve temperature value
+     *
+     * @param data - a data to convert
+     * @return returns data for JAVA
      */
-
     public ArrayList<Object> getCityAndTempFromData(final String data) {
         ObjectMapper objectMapper = new ObjectMapper();
         Current current = new Current();
@@ -36,6 +38,12 @@ public class JSONParcer {
         return cityAndTemp;
     }
 
+    /**
+     * Method to convert JSON to data for JAVA on error
+     *
+     * @param data - a data to convert on error
+     * @return returns error message
+     */
     public ArrayList<Object> readError(final String data) throws JsonProcessingException {
         ObjectMapper objectMapper = new ObjectMapper();
         ArrayList<Object> errorContainer = new ArrayList<>();

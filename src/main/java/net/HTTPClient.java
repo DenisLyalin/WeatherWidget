@@ -12,8 +12,8 @@ import java.io.IOException;
 
 /**
  * @author Denis
- * @version 0.1b
- * Class to connecting to a server using an HTTP client and retrieve data in JSON format
+ * @version 1.0
+ * Class for connecting to a server using an HTTP client and retrieve data in JSON format
  */
 
 public class HTTPClient {

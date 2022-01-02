@@ -2,7 +2,7 @@ import manager.WeatherWidget;
 
 /**
  * @author Denis
- * @version 0.1b
+ * @version 1.0
  * Main class-launcher
  * Launch WeatherWidget
  */

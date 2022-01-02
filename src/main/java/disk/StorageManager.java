@@ -7,8 +7,8 @@ import static javax.swing.JOptionPane.WARNING_MESSAGE;
 
 /**
  * @author Denis
- * @version 0.1b
- * Class for saving settings to a file on the hard disk and restoring - from a file from the hard disk
+ * @version 1.0
+ * Class for saving settings to the file on the hard disk and restoring/from the file from the hard disk
  */
 
 public class StorageManager {
@@ -16,6 +16,8 @@ public class StorageManager {
 
     /**
      * Method for writing data to file
+     *
+     * @param dataToDisk - data to be written to hard disk
      */
     public void writeToDisk(final String dataToDisk) {
         try (FileWriter writer = new FileWriter(filePref, false)) {
@@ -30,6 +32,8 @@ public class StorageManager {
 
     /**
      * Method for reading data from file
+     *
+     * @return returns data from file
      */
     public String readFromDisk() {
         String data = null;

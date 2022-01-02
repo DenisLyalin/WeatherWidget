@@ -1,8 +1,7 @@
 package manager;
 
 import disk.AppPreferences;
-import gui.MainWindow;
-import gui.Presenter;
+import gui.*;
 import model.CityWeather;
 import net.WeatherAPIClient;
 
@@ -10,7 +9,7 @@ import java.util.ArrayList;
 
 /**
  * @author Denis
- * @version 0.3b
+ * @version 1.0
  * Main programm's class
  * Create GUI
  * Saves the entered city using AppPreferences

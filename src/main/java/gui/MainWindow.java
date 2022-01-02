@@ -2,12 +2,11 @@ package gui;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
+import java.awt.event.*;
 
 /**
  * @author Denis
- * @version 0.2b
+ * @version 1.0
  * Class for creating the main program window
  */
 
@@ -18,7 +17,9 @@ public class MainWindow {
     private final JLabel timeStamp;
 
     /**
-     * Method for creating the main window
+     * Constructor that creates the main window
+     *
+     * @param gui - class for changing data in the main window
      */
     public MainWindow(final Presenter gui) {
         JFrame frame = new JFrame();
@@ -56,19 +57,30 @@ public class MainWindow {
     }
 
     /**
-     * Method for changing the city on the main window
+     * The method for displaying a city in the main window
+     *
+     * @param city - a city to display
      */
-
     public void showCity(final String city) {
         fieldCity.setText("Temperature in the " + city + ": ");
         timeStamp.setText(" ");
     }
 
+    /**
+     * The method for displaying a temperature in the main window
+     *
+     * @param Temp - a temperature to display
+     */
     public void showTemp(final String Temp) {
         fieldTempC.setText(Temp);
         timeStamp.setText(" ");
     }
 
+    /**
+     * The method for displaying a time stamp in the main window
+     *
+     * @param lastTimeUpdate - a time stamp to display
+     */
     public void setTimeStamp(final String lastTimeUpdate) {
         timeStamp.setText(lastTimeUpdate);
     }
