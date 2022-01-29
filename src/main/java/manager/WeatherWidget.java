@@ -3,13 +3,12 @@ package manager;
 import disk.AppPreferences;
 import gui.*;
 import model.CityWeather;
+import model.JavaFromJson;
 import net.WeatherAPIClient;
-
-import java.util.ArrayList;
 
 /**
  * @author Denis
- * @version 1.0
+ * @version 1.1
  * Main programm's class
  * Create GUI
  * Saves the entered city using AppPreferences
@@ -18,11 +17,14 @@ import java.util.ArrayList;
 
 public class WeatherWidget {
     private final CityWeather cityWeather = new CityWeather();
-    private final ProducerConsumer<ArrayList<Object>> producerConsumer = new ProducerConsumer<>();
+    private final ProducerConsumer<JavaFromJson> producerConsumer = new ProducerConsumer<>();
     private final AppPreferences preferences = new AppPreferences();
     private final WeatherAPIClient weatherAPIClient = new WeatherAPIClient(cityWeather, producerConsumer);
     private final Presenter gui = new Presenter(cityWeather, producerConsumer);
     private final MainWindow window = new MainWindow(gui);
+
+    static final long UPDATE_INTERVAL = 60000; //60 seconds
+    static final long DISPLAY_DELAY = 5000; //5 seconds
 
     /**
      * Method for all processes of the program
@@ -31,36 +33,32 @@ public class WeatherWidget {
         gui.injectionWindow(window);
         String cityFromDisk = preferences.restoreCity();
         if (cityFromDisk.isEmpty()) {
-            cityWeather.setFilePreferencesEmpty(true);
-            preferences.saverCityThread(cityWeather.getCity());
+            preferences.savePreferences(cityWeather.getCity());
             gui.enterCity();
         } else {
-            gui.showCity(cityFromDisk);
             cityWeather.setNewCity(cityFromDisk);
-            cityWeather.setCity(cityFromDisk);
         }
-        cityWeather.setLastUpdate(System.nanoTime());
         while (true) {
-            if ((System.nanoTime() - cityWeather.getLastUpdate()) > 60000000000L) {
-                cityWeather.setLastUpdate(System.nanoTime());
+            if ((System.currentTimeMillis() - cityWeather.getLastUpdate()) > UPDATE_INTERVAL) {
                 cityWeather.setNeedUpdate(true);
             }
             if (cityWeather.isNeedUpdate()) {
                 cityWeather.setNeedUpdate(false);
                 new Thread(weatherAPIClient).start();
                 new Thread(gui).start();
+                cityWeather.setLastUpdate(System.currentTimeMillis());
             }
             if (cityWeather.isWriteToDisk()) {
                 cityWeather.setWriteToDisk(false);
-                preferences.saverCityThread(cityWeather.getCity());
+                preferences.savePreferences(cityWeather.getCity());
             }
             try {
                 Thread.sleep(1000);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
-            if (((System.nanoTime() - cityWeather.getLastUpdate()) / 1000000000L) >= 10) {
-                gui.setLastTimeUpdate((System.nanoTime() - cityWeather.getLastUpdate()) / 1000000000L);
+            if ((System.currentTimeMillis() - cityWeather.getLastUpdate()) >= DISPLAY_DELAY) {
+                gui.setTimeStamp((System.currentTimeMillis() - cityWeather.getLastUpdate()) / 1000);
             }
         }
     }

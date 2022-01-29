@@ -1,22 +1,21 @@
 package gui;
 
 import manager.ProducerConsumer;
-import model.CityWeather;
+import model.*;
 import model.Error;
 
 import javax.swing.*;
-import java.util.ArrayList;
 
 /**
  * @author Denis
- * @version 1.0
+ * @version 1.1
  * Class for managing the graphical interface
  */
 
 public class Presenter implements Runnable {
-    MainWindow window;
-    CityWeather cityWeather;
-    ProducerConsumer<ArrayList<Object>> producerConsumer;
+    private MainWindow window;
+    private final CityWeather cityWeather;
+    private final ProducerConsumer<JavaFromJson> producerConsumer;
 
     /**
      * Constructor
@@ -24,7 +23,7 @@ public class Presenter implements Runnable {
      * @param cityWeather      - class-model for data storage
      * @param producerConsumer - class for the implementation of the pattern Producer-Consumer (to exchange data between threads)
      */
-    public Presenter(final CityWeather cityWeather, final ProducerConsumer<ArrayList<Object>> producerConsumer) {
+    public Presenter(final CityWeather cityWeather, final ProducerConsumer<JavaFromJson> producerConsumer) {
         this.cityWeather = cityWeather;
         this.producerConsumer = producerConsumer;
     }
@@ -34,35 +33,29 @@ public class Presenter implements Runnable {
      */
     public void run() {
         try {
-            ArrayList<Object> buffer = producerConsumer.consume();
-            try {
-                String bufferCity = (String) buffer.get(0);
+            JavaFromJson javaFromJson = producerConsumer.consume();
+            if (javaFromJson instanceof JavaDataFromJson) {
+                JavaDataFromJson javaDataFromJson = (JavaDataFromJson) javaFromJson;
+                String bufferCity = javaDataFromJson.location.name;
                 if (!bufferCity.equals(cityWeather.getCity())) {
                     cityWeather.setCity(bufferCity);
                     cityWeather.setWriteToDisk(true);
                 }
                 this.showCity(cityWeather.getCity());
-                cityWeather.setTempC((Double) buffer.get(1));
+                cityWeather.setTempC(javaDataFromJson.current.tempC);
                 this.showTemp("" + cityWeather.getTempC());
-                cityWeather.setLastUpdate(System.nanoTime());
-            } catch (Exception e) {
-                Error error = (Error) buffer.get(0);
+            } else {
+                JavaErrorFromJson javaErrorFromJson = (JavaErrorFromJson) javaFromJson;
+                Error error = javaErrorFromJson.error;
                 JFrame f = new JFrame();
                 JOptionPane.showMessageDialog(f, error.message);
                 if (error.code == 0) {
-                    this.showTemp("--");
+                    this.showTemp("\u2014");
                 }
-                if (cityWeather.isFilePreferencesEmpty()) {
-                    cityWeather.setNeedUpdate(true);
-                    this.showCity(cityWeather.getCity());
-                    cityWeather.setFilePreferencesEmpty(false);
-                }
-            } finally {
-                cityWeather.setNewCity("");
+                cityWeather.setNeedUpdate(true);
             }
-
-        } catch (InterruptedException e) {
-            e.printStackTrace();
+            cityWeather.setNewCity("");
+        } catch (InterruptedException ignore) {
         }
     }
 
@@ -82,13 +75,15 @@ public class Presenter implements Runnable {
         JFrame f = new JFrame();
         String city;
         city = JOptionPane.showInputDialog(f, "Enter city:");
-        if (city == null || city.equals("")) {
-            city = JOptionPane.showInputDialog(f, "If your city is not Moscow. Please, enter city:");
-        }
         if (city != null) {
-            if (!city.equals("")) {
+            city = city.trim();
+            if (!city.isEmpty()) {
                 cityWeather.setNewCity(city);
+            } else {
+                cityWeather.setWriteToDisk(true);
             }
+        } else {
+            cityWeather.setWriteToDisk(true);
         }
     }
 
@@ -97,7 +92,7 @@ public class Presenter implements Runnable {
      *
      * @param lastTimeUpdate - a time stamp
      */
-    public void setLastTimeUpdate(Long lastTimeUpdate) {
+    public void setTimeStamp(Long lastTimeUpdate) {
         window.setTimeStamp("Update " + lastTimeUpdate + " sec ago");
     }
 
@@ -107,6 +102,7 @@ public class Presenter implements Runnable {
      * @param city - a city
      */
     public void setCityFromMainWindow(String city) {
+        city = city.trim();
         if (!city.isEmpty()) {
             cityWeather.setNewCity(city);
             cityWeather.setNeedUpdate(true);

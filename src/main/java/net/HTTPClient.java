@@ -12,7 +12,7 @@ import java.io.IOException;
 
 /**
  * @author Denis
- * @version 1.0
+ * @version 1.1
  * Class for connecting to a server using an HTTP client and retrieve data in JSON format
  */
 
@@ -27,11 +27,11 @@ public class HTTPClient {
     public String getData(final String uri) {
         CloseableHttpClient httpClient = HttpClients.createDefault();
         HttpGet httpGet = new HttpGet(uri);
-        String responseText = null;
+        String jsonResponse = null;
         try {
             CloseableHttpResponse httpResponse = httpClient.execute(httpGet);
             HttpEntity entity = httpResponse.getEntity();
-            responseText = EntityUtils.toString(entity);
+            jsonResponse = EntityUtils.toString(entity);
         } catch (IOException | ParseException ignore) {
         } finally {
             try {
@@ -40,6 +40,6 @@ public class HTTPClient {
                 e.printStackTrace();
             }
         }
-        return responseText;
+        return jsonResponse;
     }
 }

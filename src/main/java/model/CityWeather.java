@@ -48,11 +48,11 @@ public class CityWeather {
         return needUpdate;
     }
 
-    public void setNewCity (final String newCity) {
+    public void setNewCity(final String newCity) {
         this.newCity = newCity;
     }
 
-    public String getNewCity () {
+    public String getNewCity() {
         return newCity;
     }
 

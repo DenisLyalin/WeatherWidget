@@ -1,20 +1,17 @@
 package net;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import manager.ProducerConsumer;
-import model.CityWeather;
+import model.*;
 import model.Error;
-
-import java.util.ArrayList;
 
 /**
  * @author Denis
- * @version 1.0
+ * @version 1.1
  * The class returns the required data for the requested city from the server.
  */
 public class WeatherAPIClient implements Runnable {
-    CityWeather cityWeather;
-    ProducerConsumer<ArrayList<Object>> producerConsumer;
+    private final CityWeather cityWeather;
+    private final ProducerConsumer<JavaFromJson> producerConsumer;
 
     /**
      * Constructor
@@ -22,7 +19,7 @@ public class WeatherAPIClient implements Runnable {
      * @param cityWeather      - class-model for data storage
      * @param producerConsumer - class for the implementation of the pattern Producer-Consumer (to exchange data between threads)
      */
-    public WeatherAPIClient(final CityWeather cityWeather, final ProducerConsumer<ArrayList<Object>> producerConsumer) {
+    public WeatherAPIClient(final CityWeather cityWeather, final ProducerConsumer<JavaFromJson> producerConsumer) {
         this.cityWeather = cityWeather;
         this.producerConsumer = producerConsumer;
     }
@@ -40,29 +37,21 @@ public class WeatherAPIClient implements Runnable {
         city = city.replace(" ", "_");
         String uri = "http://api.weatherapi.com/v1/current.json?key=df5ff08c050a418eb38122830212003&q=" + city + "&aqi=no";
         HTTPClient httpClient = new HTTPClient();
-        String dataFromServer = httpClient.getData(uri);
-        JSONParcer jsonParcer = new JSONParcer();
-        ArrayList<Object> data = new ArrayList<>();
-        if (dataFromServer != null) {
+        String jsonFromServer = httpClient.getData(uri);
+        JSONParser jsonParser = new JSONParser();
+        if (jsonFromServer != null) {
+            JavaFromJson javaFromJson = jsonParser.getJavaFromJson(jsonFromServer);
             try {
-                data = jsonParcer.readError(dataFromServer);
-            } catch (JsonProcessingException e) {
-                data = jsonParcer.getCityAndTempFromData(dataFromServer);
-            } finally {
-                try {
-                    producerConsumer.produce(data);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
+                producerConsumer.produce(javaFromJson);
+            } catch (InterruptedException ignore) {
             }
         } else {
-            Error error = new Error();
-            error.message = "Connection failed!";
-            data.add(error);
+            JavaErrorFromJson javaErrorFromJson = new JavaErrorFromJson();
+            javaErrorFromJson.error = new Error();
+            javaErrorFromJson.error.message = "Connection failed!";
             try {
-                producerConsumer.produce(data);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
+                producerConsumer.produce(javaErrorFromJson);
+            } catch (InterruptedException ignore) {
             }
         }
     }

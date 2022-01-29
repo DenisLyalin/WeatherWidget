@@ -7,7 +7,7 @@ import static javax.swing.JOptionPane.WARNING_MESSAGE;
 
 /**
  * @author Denis
- * @version 1.0
+ * @version 1.1
  * Class for saving settings to the file on the hard disk and restoring/from the file from the hard disk
  */
 
@@ -36,7 +36,7 @@ public class StorageManager {
      * @return returns data from file
      */
     public String readFromDisk() {
-        String data = null;
+        String data = "";
         File file = new File(filePref);
         try (FileReader reader = new FileReader(file)) {
             char[] chars = new char[(int) file.length()];

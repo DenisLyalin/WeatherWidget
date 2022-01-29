@@ -31,9 +31,9 @@ public class MainWindow {
             }
         });
         fieldForCity.setBounds(2, 2, 226, 24);
-        fieldCity = new JLabel("Temperature is loading: ");
+        fieldCity = new JLabel("Loading...");
         fieldCity.setBounds(2, 50, 200, 24);
-        fieldTempC = new JLabel(" -- \u2103");
+        fieldTempC = new JLabel("\u2014 \u2103");
         fieldTempC.setBounds(202, 50, 100, 24);
         timeStamp = new JLabel();
         JButton changeCity = new JButton("Change City");
@@ -51,7 +51,7 @@ public class MainWindow {
         frame.add(fieldForCity);
         frame.add(timeStamp);
         frame.getContentPane().add(BorderLayout.SOUTH, timeStamp);
-        frame.getContentPane().setBackground(new Color(135, 206, 235));
+        frame.getContentPane().setBackground(new Color(90, 221, 255));
         frame.setSize(350, 200);
         frame.setVisible(true);
     }
@@ -72,7 +72,7 @@ public class MainWindow {
      * @param Temp - a temperature to display
      */
     public void showTemp(final String Temp) {
-        fieldTempC.setText(Temp);
+        fieldTempC.setText(Temp + " \u2103");
         timeStamp.setText(" ");
     }
 
