@@ -11,7 +11,7 @@ import model.Error;
  */
 public class WeatherAPIClient implements Runnable {
     private final CityWeather cityWeather;
-    private final ProducerConsumer<JavaFromJson> producerConsumer;
+    private final ProducerConsumer<BaseResponse> producerConsumer;
 
     /**
      * Constructor
@@ -19,7 +19,7 @@ public class WeatherAPIClient implements Runnable {
      * @param cityWeather      - class-model for data storage
      * @param producerConsumer - class for the implementation of the pattern Producer-Consumer (to exchange data between threads)
      */
-    public WeatherAPIClient(final CityWeather cityWeather, final ProducerConsumer<JavaFromJson> producerConsumer) {
+    public WeatherAPIClient(final CityWeather cityWeather, final ProducerConsumer<BaseResponse> producerConsumer) {
         this.cityWeather = cityWeather;
         this.producerConsumer = producerConsumer;
     }
@@ -40,17 +40,17 @@ public class WeatherAPIClient implements Runnable {
         String jsonFromServer = httpClient.getData(uri);
         JSONParser jsonParser = new JSONParser();
         if (jsonFromServer != null) {
-            JavaFromJson javaFromJson = jsonParser.getJavaFromJson(jsonFromServer);
+            BaseResponse baseResponse = jsonParser.parseCurrentWeatherResponse(jsonFromServer);
             try {
-                producerConsumer.produce(javaFromJson);
+                producerConsumer.produce(baseResponse);
             } catch (InterruptedException ignore) {
             }
         } else {
-            JavaErrorFromJson javaErrorFromJson = new JavaErrorFromJson();
-            javaErrorFromJson.error = new Error();
-            javaErrorFromJson.error.message = "Connection failed!";
+            ErrorResponse errorResponse = new ErrorResponse();
+            errorResponse.error = new Error();
+            errorResponse.error.message = "Connection failed!";
             try {
-                producerConsumer.produce(javaErrorFromJson);
+                producerConsumer.produce(errorResponse);
             } catch (InterruptedException ignore) {
             }
         }

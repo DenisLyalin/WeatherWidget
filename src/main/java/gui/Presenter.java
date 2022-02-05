@@ -15,7 +15,7 @@ import javax.swing.*;
 public class Presenter implements Runnable {
     private MainWindow window;
     private final CityWeather cityWeather;
-    private final ProducerConsumer<JavaFromJson> producerConsumer;
+    private final ProducerConsumer<BaseResponse> producerConsumer;
 
     /**
      * Constructor
@@ -23,7 +23,7 @@ public class Presenter implements Runnable {
      * @param cityWeather      - class-model for data storage
      * @param producerConsumer - class for the implementation of the pattern Producer-Consumer (to exchange data between threads)
      */
-    public Presenter(final CityWeather cityWeather, final ProducerConsumer<JavaFromJson> producerConsumer) {
+    public Presenter(final CityWeather cityWeather, final ProducerConsumer<BaseResponse> producerConsumer) {
         this.cityWeather = cityWeather;
         this.producerConsumer = producerConsumer;
     }
@@ -33,20 +33,20 @@ public class Presenter implements Runnable {
      */
     public void run() {
         try {
-            JavaFromJson javaFromJson = producerConsumer.consume();
-            if (javaFromJson instanceof JavaDataFromJson) {
-                JavaDataFromJson javaDataFromJson = (JavaDataFromJson) javaFromJson;
-                String bufferCity = javaDataFromJson.location.name;
+            BaseResponse baseResponse = producerConsumer.consume();
+            if (baseResponse instanceof CurrentWeatherResponse) {
+                CurrentWeatherResponse currentWeatherResponse = (CurrentWeatherResponse) baseResponse;
+                String bufferCity = currentWeatherResponse.location.name;
                 if (!bufferCity.equals(cityWeather.getCity())) {
                     cityWeather.setCity(bufferCity);
                     cityWeather.setWriteToDisk(true);
                 }
                 this.showCity(cityWeather.getCity());
-                cityWeather.setTempC(javaDataFromJson.current.tempC);
+                cityWeather.setTempC(currentWeatherResponse.current.tempC);
                 this.showTemp("" + cityWeather.getTempC());
             } else {
-                JavaErrorFromJson javaErrorFromJson = (JavaErrorFromJson) javaFromJson;
-                Error error = javaErrorFromJson.error;
+                ErrorResponse errorResponse = (ErrorResponse) baseResponse;
+                Error error = errorResponse.error;
                 JFrame f = new JFrame();
                 JOptionPane.showMessageDialog(f, error.message);
                 if (error.code == 0) {

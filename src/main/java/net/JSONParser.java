@@ -19,22 +19,22 @@ public class JSONParser {
      * @param data - a data to convert
      * @return returns data or error object for JAVA
      */
-    public JavaFromJson getJavaFromJson(final String data) {
+    public BaseResponse parseCurrentWeatherResponse(final String data) {
         ObjectMapper objectMapper = new ObjectMapper();
-        JavaDataFromJson javaDataFromJson;
-        JavaErrorFromJson javaErrorFromJson;
+        CurrentWeatherResponse currentWeatherResponse;
+        ErrorResponse errorResponse;
         try {
-            javaDataFromJson = objectMapper.readValue(data, JavaDataFromJson.class);
-            return javaDataFromJson;
+            currentWeatherResponse = objectMapper.readValue(data, CurrentWeatherResponse.class);
+            return currentWeatherResponse;
         } catch (JsonProcessingException e) {
             try {
-                javaErrorFromJson = objectMapper.readValue(data, JavaErrorFromJson.class);
+                errorResponse = objectMapper.readValue(data, ErrorResponse.class);
             } catch (JsonProcessingException ex) {
-                javaErrorFromJson = new JavaErrorFromJson();
-                javaErrorFromJson.error = new Error();
-                javaErrorFromJson.error.message = "JSON Parsing failed!";
+                errorResponse = new ErrorResponse();
+                errorResponse.error = new Error();
+                errorResponse.error.message = "JSON Parsing failed!";
             }
-            return javaErrorFromJson;
+            return errorResponse;
         }
     }
 }

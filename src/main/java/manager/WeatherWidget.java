@@ -3,7 +3,7 @@ package manager;
 import disk.AppPreferences;
 import gui.*;
 import model.CityWeather;
-import model.JavaFromJson;
+import model.BaseResponse;
 import net.WeatherAPIClient;
 
 /**
@@ -17,7 +17,7 @@ import net.WeatherAPIClient;
 
 public class WeatherWidget {
     private final CityWeather cityWeather = new CityWeather();
-    private final ProducerConsumer<JavaFromJson> producerConsumer = new ProducerConsumer<>();
+    private final ProducerConsumer<BaseResponse> producerConsumer = new ProducerConsumer<>();
     private final AppPreferences preferences = new AppPreferences();
     private final WeatherAPIClient weatherAPIClient = new WeatherAPIClient(cityWeather, producerConsumer);
     private final Presenter gui = new Presenter(cityWeather, producerConsumer);
